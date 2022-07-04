@@ -2,33 +2,25 @@ package main
 
 import (
 	"context"
-	"os"
 	"strconv"
 
-	"github.com/anvari1313/splitwise.go"
+	sw "splitwise-to-ynab/splitwise"
+
 	"github.com/apex/log"
 	"github.com/joho/godotenv"
 )
 
 func main() {
 
+	ctx := context.Background()
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	var splitwiseApiKey string
-	if val, ok := os.LookupEnv("SPLITWISE_API_KEY"); ok {
-		splitwiseApiKey = val
-	} else {
-		os.Exit(1)
-	}
+	splitwiseClient := sw.InitClient()
 
-	auth := splitwise.NewAPIKeyAuth(splitwiseApiKey)
-	client := splitwise.NewClient(auth)
-	ctx := context.Background()
-
-	groups, err := client.Groups(ctx)
+	groups, err := splitwiseClient.Groups(ctx)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -37,6 +29,5 @@ func main() {
 			id := strconv.FormatUint(v.ID, 10)
 			log.Info(id)
 		}
-
 	}
 }
