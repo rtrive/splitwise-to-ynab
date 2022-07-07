@@ -1,10 +1,12 @@
 package splitwise
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 
-	"github.com/anvari1313/splitwise.go"
 	"github.com/apex/log"
+	"github.com/rtrive/splitwise.go"
 )
 
 func InitClient() splitwise.Client {
@@ -20,4 +22,18 @@ func InitClient() splitwise.Client {
 	auth := splitwise.NewAPIKeyAuth(splitwiseApiKey)
 	client := splitwise.NewClient(auth)
 	return client
+}
+
+func CreateExpenseSplitEqually(ctx context.Context, sw splitwise.Client, transaction string) {
+	var txSplitEqually splitwise.ExpenseSplitEqually
+	err := json.Unmarshal([]byte(transaction), &txSplitEqually)
+	if err != nil {
+		log.Error("wrong conversion")
+	}
+
+	_, err = sw.CreateExpenseSplitEqually(ctx, txSplitEqually)
+
+	if err != nil {
+		log.Error("Error during create transaction " + err.Error())
+	}
 }

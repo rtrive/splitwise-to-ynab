@@ -2,13 +2,27 @@ package main
 
 import (
 	"context"
-	"strconv"
 
 	sw "splitwise-to-ynab/splitwise"
 
 	"github.com/apex/log"
 	"github.com/joho/godotenv"
 )
+
+type Expense struct {
+	Cost           string `json:"cost"`
+	Description    string `json:"description"`
+	Details        string `json:"details"`
+	Date           string `json:"date"`
+	RepeatInterval string `json:"repeat_interval"`
+	CurrencyCode   string `json:"currency_code"`
+	CategoryId     uint32 `json:"category_id"`
+	GroupId        uint32 `json:"group_id"`
+}
+type ExpenseSplitEqually struct {
+	Expense
+	SplitEqually bool `json:"split_equally"`
+}
 
 func main() {
 
@@ -20,14 +34,4 @@ func main() {
 
 	splitwiseClient := sw.InitClient()
 
-	groups, err := splitwiseClient.Groups(ctx)
-	if err != nil {
-		log.Error(err.Error())
-	}
-	for _, v := range groups {
-		if v.Name == "Appartamento" {
-			id := strconv.FormatUint(v.ID, 10)
-			log.Info(id)
-		}
-	}
 }
